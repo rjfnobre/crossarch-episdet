@@ -21,11 +21,11 @@ Compiling cross-architecture application binary targeting high-order (k=3) epist
 
 ## Usage example
 
-Running in DevCloud for synthetic example dataset with 1024 SNPs (178433024 triplets of SNPs to evaluate) and 4096 samples:
+Running in DevCloud for synthetic example dataset with 1024 SNPs (178,433,024 triplets of SNPs to evaluate) and 4096 samples:
 ```bash
         make run        # run on any type of DevCloud node
-        make run_cpu    # run on DevCloud node with Intel Iris Xe MAX (CPU)
-        make run_gpu    # run on DevCloud node with Intel Xeon Gold 6128 (CPU)
+        make run_cpu    # run on DevCloud node with Intel Xeon Gold 6128 (CPU)
+        make run_gpu    # run on DevCloud node with Intel Iris Xe MAX (GPU)
 ```
 
 Use the `qstat` command to check if the search terminated on DevCloud, and when completed, access the output of the search with:
