@@ -164,15 +164,18 @@ void epistasis(unsigned long long *datasetCases, unsigned long long *datasetCont
 				casesArr[epistasis_i * 3 + 2] = mask & ~(casesArr[epistasis_i * 3 + 0] | casesArr[epistasis_i * 3 + 1]); 
 			}
 
-                        for(int comb_i = 0; comb_i < COMB_SIZE; comb_i++) {
-                                unsigned long long acc = 0xFFFFFFFFFFFFFFFF;
-
-                                for(int epistasis_i=0; epistasis_i < EPISTASIS_SIZE; epistasis_i++) {
-                                        acc = acc & casesArr[epistasis_i * 3 + ((int) (comb_i / pow_table[epistasis_i])) % 3];
+                        for(int a_i = 0; a_i < 3; a_i++) {
+                                for(int b_i = 0; b_i < 3; b_i++) {
+                                        #if defined(PAIRWISE)
+                                        uint comb_i = a_i * 3 + b_i;
+                                        observedValues_shared[comb_i * 2 * WORKGROUP_SIZE + 1 * WORKGROUP_SIZE + local_id] += sycl::popcount(casesArr[0 * 3 + a_i] & casesArr[1 * 3 + b_i]);
+                                        #else
+                                        for(int c_i = 0; c_i < 3; c_i++) {
+                                                uint comb_i = a_i * 9 + b_i * 3 + c_i;
+                                                observedValues_shared[comb_i * 2 * WORKGROUP_SIZE + 1 * WORKGROUP_SIZE + local_id] += sycl::popcount(casesArr[0 * 3 + a_i] & casesArr[1 * 3 + b_i] & casesArr[2 * 3 + c_i]);
+                                        }
+                                        #endif
                                 }
-
-                                observedValues_shared[comb_i * 2 * WORKGROUP_SIZE + 1 * WORKGROUP_SIZE +
-                                        local_id] += sycl::popcount(acc);
                         }
 		}
 
@@ -191,14 +194,18 @@ void epistasis(unsigned long long *datasetCases, unsigned long long *datasetCont
 				controlsArr[epistasis_i * 3 + 2] = mask & ~(controlsArr[epistasis_i * 3 + 0] | controlsArr[epistasis_i * 3 + 1]); 
 			}
 
-                        for(int comb_i = 0; comb_i < COMB_SIZE; comb_i++) {
-                                unsigned long long acc = 0xFFFFFFFFFFFFFFFF;
-                                for(int epistasis_i=0; epistasis_i < EPISTASIS_SIZE; epistasis_i++) {
-                                        acc = acc & controlsArr[epistasis_i * 3 + ((int) (comb_i / pow_table[epistasis_i])) % 3];
-
+                        for(int a_i = 0; a_i < 3; a_i++) {
+                                for(int b_i = 0; b_i < 3; b_i++) {
+                                        #if defined(PAIRWISE)
+                                        uint comb_i = a_i * 3 + b_i;
+                                        observedValues_shared[comb_i * 2 * WORKGROUP_SIZE + 0 * WORKGROUP_SIZE + local_id] += sycl::popcount(controlsArr[0 * 3 + a_i] & controlsArr[1 * 3 + b_i]);
+                                        #else
+                                        for(int c_i = 0; c_i < 3; c_i++) {
+                                                uint comb_i = a_i * 9 + b_i * 3 + c_i;
+                                                observedValues_shared[comb_i * 2 * WORKGROUP_SIZE + 0 * WORKGROUP_SIZE + local_id] += sycl::popcount(controlsArr[0 * 3 + a_i] & controlsArr[1 * 3 + b_i] & controlsArr[2 * 3 + c_i]);
+                                        }
+                                        #endif
                                 }
-                                observedValues_shared[comb_i * 2 * WORKGROUP_SIZE + 0 * WORKGROUP_SIZE +
-                                        local_id] += sycl::popcount(acc);
                         }
 		}
 
